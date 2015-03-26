@@ -1,0 +1,213 @@
+
+<project name="QuizCheater" default="build">
+
+    <property name="app.name" value="NeverFail" />
+    <property name="app.title" value="NeverFail" />
+    <property name="app.vendor" value="Sign Of Success" />
+    <property name="app.main" value="com.neverfail.NeverFail" />
+    <property name="app.version" value="2.0" />
+
+
+    <!-- Do not edit these two, they are dynamically set -->
+    <property name="build.counter" value="%BUILD%121" />
+    <property name="build.lastId" value="%BUILDID%c31df25c31df25c31df25" />
+
+    <property environment="env" />
+
+    <property name="src.rel-dir" value="src" />
+    <property name="src.java.rel-dir" value="${src.rel-dir}" />
+
+    <property name="libraries.rel-dir" value="libs" />
+
+    <property name="build.rel-dir" value="build" />
+    <property name="build.classes.rel-dir" value="${build.rel-dir}/classes" />
+    <property name="dist.rel-dir" value="dist" />
+
+
+    <property name="git.branch.development" value="development" />
+    <property name="git.branch.release" value="master" />
+
+    <property name="proguard.config.rel-dir" value="proguard.config" />
+
+
+    <target name="clean"
+            description="Delete build directories" >
+        <echo message="Deleting the build directories and its contents..." />
+
+        <delete dir="${build.rel-dir}" />
+        <delete dir="${dist.rel-dir}" />
+    </target>
+
+    <target name="rebuild"
+            depends="clean, build"
+            description="Rebuild the project">
+    </target>
+
+    <target name="build"
+            depends="setVersion"
+            description="Build the project">
+
+        <echo message="Creating the build directories..." />
+
+        <mkdir dir="${build.rel-dir}" />
+        <mkdir dir="${build.classes.rel-dir}" />
+
+        <path id="classpath">
+            <fileset dir="${libraries.rel-dir}" includes="**/*.jar" />
+        </path>
+
+        <javac srcdir="${src.java.rel-dir}"
+               destdir="${build.classes.rel-dir}"
+               source="1.7"
+               compiler="javac1.7"
+               includeantruntime="false"
+               debug="${git.is_development}"
+               debuglevel="lines,vars,source"
+               failonerror="true"
+               classpathref="classpath">
+        </javac>
+
+    </target>
+
+
+    <target name="generate"
+            depends="build"
+            description="Compile and compress to create .jar archive">
+        <echo message="Archive version: ${version}" />
+
+        <mkdir dir="${dist.rel-dir}" />
+
+        <tstamp>
+            <format property="date" pattern="yyyy-MM-dd HH:mm:ss" />
+        </tstamp>
+        
+        
+        <!-- Create jar archive -->
+        <mkdir dir="${dist.rel-dir}/${version.type}" />
+        <property name="jar.name" value="${dist.rel-dir}/${version.type}/${ant.project.name}.${version}" />
+        <jar destfile="${jar.name}.jar"
+             basedir="${build.classes.rel-dir}"
+             compress="true" level="9">
+
+            <!-- Include libraries -->
+            <zipgroupfileset dir="${libraries.rel-dir}" includes="*.jar" />
+
+            <!-- Create manifest -->
+            <manifest>
+                <attribute name="Main-Class" value="${app.main}" />
+                
+                <section name="${ant.project.name}">
+                    <attribute name="Specification-Title" value="${app.title}" />
+                    <attribute name="Specification-Version" value="${app.version}" />
+                    <attribute name="Specification-Vendor" value="${app.vendor}" />
+                    <attribute name="Implementation-Title" value="${app.main}" />
+                    <attribute name="Implementation-Version" value="${version}" />
+                    <attribute name="Implementation-Vendor" value="${app.vendor}" />
+                </section>
+
+                <section name="Information">
+                    <attribute name="Build-Date" value="${date}" />
+                    <attribute name="Build-Type" value="${version.type}" />
+                    <attribute name="Build-Version" value="${git.tags.last}" />
+                    <attribute name="Build-Branch" value="${git.branch.current}" />
+                    <attribute name="Build-Commit" value="${git.commit.current}" />
+                    <attribute name="Build-Number" value="${build.number}" />
+                    <attribute name="Builder-Environment" value="${os.name} - ${os.version}" />
+                </section>
+            </manifest>
+
+        </jar>
+
+    </target>
+
+    <target name="setVersion.getBranch" >
+        <!-- Get current branch -->
+        <exec executable="git"
+              failonerror="true"
+              logerror="true"
+              outputproperty="git.branch.current">
+            <arg value="rev-parse" />
+            <arg value="--abbrev-ref" />
+            <arg value="HEAD" />
+        </exec>
+
+        <!-- Find out version depending of branch
+             Dev: X.YZ_abcde
+             Release: X.YZ -->
+        <condition property="git.is_development">
+            <equals arg1="${git.branch.development}"
+                    arg2="${git.branch.current}"/>
+        </condition>
+        <echo message="Current branch: ${git.branch.current}" />
+
+        <!-- get commit id -->
+        <exec executable="git"
+              failonerror="true"
+              logerror="true"
+              outputproperty="git.commit.current">
+            <arg value="rev-parse" />
+            <arg value="--short" />
+            <arg value="HEAD" />
+        </exec>
+
+
+        <!-- get last build id -->
+        <!-- if different reset build counter -->
+        <!-- else increment it -->
+        <script language="javascript"> <![CDATA[
+           var rawID = project.getProperty("build.lastId");
+           var lastBuildId = rawID.substring(9);
+
+           var currentBuildId = project.getProperty("git.commit.current");
+           if(currentBuildId != lastBuildId) {
+               var buildNumber = 1;
+           } else {
+               var rawBuildNumber = project.getProperty("build.counter");
+               var buildNumber = 1 + parseInt(
+                   rawBuildNumber.substring(7)
+               );
+           }
+
+           project.setProperty("build.number", buildNumber);
+        ]]></script>
+        <property name="build.number" value="" />
+
+
+
+        <replace file="${ant.file}"
+                 token="${build.counter}"
+                 value="%BUILD%121${build.number}" />
+        <replace file="${ant.file}"
+                 token="${build.lastId}"
+                 value="%BUILDID%c31df25c31df25c31df25${git.commit.current}" />
+    </target>
+
+    <target name="setVersion.getComplement" if="git.is_development"
+            depends="setVersion.getBranch">
+
+        <property name="version.complement"
+                  value="${git.commit.current}_${build.number}" />
+        <property name="version.type" value="Development" />
+    </target>
+
+    <target name="setVersion" depends="setVersion.getComplement">
+        <property name="version.complement" value="" />
+        <property name="version.type" value="Release" />
+
+        <!-- Get version name (git last tag) -->
+        <exec executable="git"
+              failonerror="false"
+              logerror="true"
+              outputproperty="git.tags.last">
+            <arg value="describe" />
+            <arg value="--tags" />
+            <arg value="--abbrev=0" />
+            <arg value="HEAD" />
+        </exec>
+
+        <property name="version"
+                  value="${git.tags.last}${version.complement}"/>
+        <echo message="Build n°${build.number} of commit ${git.commit.current}" />
+    </target>
+
+</project>

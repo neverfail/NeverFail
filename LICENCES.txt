@@ -1,0 +1,19 @@
+External libraries are the property of their owner/creator and have their own licence.
+ darcula.jar - https://github.com/bulenkov/Darcula
+ xz.jar      - http://tukaani.org/xz/java.html
+
+ Never Licence:
+
+         DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                     Version 2, December 2004
+
+  Copyright (C) 2015 NeverFail Team
+
+  Everyone is permitted to copy and distribute verbatim or modified
+  copies of this license document, and changing it is allowed as long
+  as the name is changed.
+
+             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+   0. You just DO WHAT THE FUCK YOU WANT TO.
