@@ -9,8 +9,8 @@
 
 
     <!-- Do not edit these two, they are dynamically set -->
-    <property name="build.counter" value="%BUILD%0" />
-    <property name="build.lastId" value="%BUILDID%abcdef" />
+    <property name="build.counter" value="%BUILD%8" />
+    <property name="build.lastId" value="%BUILDID%6af41bb" />
 
     <property environment="env" />
 
@@ -23,8 +23,6 @@
     <property name="build.classes.rel-dir" value="${build.rel-dir}/classes" />
     <property name="dist.rel-dir" value="dist" />
 
-
-    <property name="git.branch.development" value="development" />
     <property name="git.branch.release" value="master" />
 
     <property name="proguard.config.rel-dir" value="proguard.config" />
@@ -56,6 +54,7 @@
             <fileset dir="${libraries.rel-dir}" includes="**/*.jar" />
         </path>
 
+        <echo message="Compiling ./${src.java.rel-dir} to ./${build.classes.rel-dir} - debug: ${git.is_development}" />
         <javac srcdir="${src.java.rel-dir}"
                destdir="${build.classes.rel-dir}"
                source="1.7"
@@ -135,9 +134,13 @@
              Dev: X.YZ_abcde
              Release: X.YZ -->
         <condition property="git.is_development">
-            <equals arg1="${git.branch.development}"
-                    arg2="${git.branch.current}"/>
+            <not>
+                <equals arg1="${git.branch.release}"
+                        arg2="${git.branch.current}"/>
+            </not>
         </condition>
+        <property name="git.is_development" value="off" />
+
         <echo message="Current branch: ${git.branch.current}" />
 
         <!-- get commit id -->
@@ -186,7 +189,7 @@
             depends="setVersion.getBranch">
 
         <property name="version.complement"
-                  value="${git.commit.current}_${build.number}" />
+                  value=".${build.number}_${git.commit.current}" />
         <property name="version.type" value="Development" />
     </target>
 
