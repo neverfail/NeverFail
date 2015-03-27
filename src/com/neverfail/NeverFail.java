@@ -32,7 +32,6 @@ class NeverFail {
         this.searchFunctionsPositions(rawBytes);
 
         // search for variables addresses
-        //Dictionary<String, byte[]> magicAddressesTable = this.searchAddresses(rawBytes);
         this.searchAddressesDirty(rawBytes);
 
         // default behavior, we just pick a random mark
@@ -308,7 +307,7 @@ class NeverFail {
         }
 
         String range1str = Integer.toHexString(range2 - range1);
-        String range2str = Integer.toHexString(range2);
+        String range2str = Integer.toHexString(range1);
 
         for (MagicConstants.Function func : MagicConstants.FUNCTIONS) {
             // update bytecode, ensure hex number is 0 padded (0x01 not 0x1)
