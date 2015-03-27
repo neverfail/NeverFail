@@ -4,7 +4,7 @@ NeverFail
 NeverFail is a java jar executable to patch Articulate's QuizMaker's output.
 It rewrite quiz.swf scoring function to update mark in case the quiz have been failed.
 The new mark is picked at random every runtime and can be adjust in this code.
-Main advantage of this method is that it doesn't produce .xml files and other data, 
+Main advantage of this method is that it doesn't produce .xml files and other data,
 it's all on quiz.swf and invisible (file size don't change).
 
 ## Installation
@@ -38,7 +38,7 @@ it's all on quiz.swf and invisible (file size don't change).
 * NeverFail v1.0 use QuizCheater and add a patch to only update score when user fail quiz.
 * QuizCheater v3.0 support new type of quiz (only), static score update.
 * QuizCheater v4.0 random score update with real score computing.
-* QuizCheater v5.0 Support all quiz type, real score, lot of tunning available, act as a wrapper for data.swf.
+* QuizCheater v5.0 Support all quiz type, real score, lot of tuning available, act as a wrapper for data.swf.
 * NeverFail v2.0 rework of NeverFail, it's not anymore using quizCheater. Only manipulating quiz.swf.
 
 ## Credits

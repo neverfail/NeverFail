@@ -9,8 +9,8 @@
 
 
     <!-- Do not edit these two, they are dynamically set -->
-    <property name="build.counter" value="%BUILD%121" />
-    <property name="build.lastId" value="%BUILDID%c31df25c31df25c31df25" />
+    <property name="build.counter" value="%BUILD%0" />
+    <property name="build.lastId" value="%BUILDID%abcdef" />
 
     <property environment="env" />
 
@@ -176,10 +176,10 @@
 
         <replace file="${ant.file}"
                  token="${build.counter}"
-                 value="%BUILD%121${build.number}" />
+                 value="%BUILD%${build.number}" />
         <replace file="${ant.file}"
                  token="${build.lastId}"
-                 value="%BUILDID%c31df25c31df25c31df25${git.commit.current}" />
+                 value="%BUILDID%${git.commit.current}" />
     </target>
 
     <target name="setVersion.getComplement" if="git.is_development"
