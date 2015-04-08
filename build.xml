@@ -1,5 +1,5 @@
 
-<project name="QuizCheater" default="build">
+<project name="NeverFail" default="build">
 
     <property name="app.name" value="NeverFail" />
     <property name="app.title" value="NeverFail" />
@@ -9,8 +9,8 @@
 
 
     <!-- Do not edit these two, they are dynamically set -->
-    <property name="build.counter" value="%BUILD%8" />
-    <property name="build.lastId" value="%BUILDID%6af41bb" />
+    <property name="build.counter" value="%BUILD%0" />
+    <property name="build.lastId" value="%BUILDID%1234567" />
 
     <property environment="env" />
 
@@ -54,13 +54,18 @@
             <fileset dir="${libraries.rel-dir}" includes="**/*.jar" />
         </path>
 
-        <echo message="Compiling ./${src.java.rel-dir} to ./${build.classes.rel-dir} - debug: ${git.is_development}" />
+        <condition property="javac_debug" value="off" else="true">
+            <equals arg1="${git.is_development}" arg2="false" />
+        </condition>
+
+        <echo message="Compiling ./${src.java.rel-dir} to ./${build.classes.rel-dir} - debug: ${javac_debug}" />
         <javac srcdir="${src.java.rel-dir}"
                destdir="${build.classes.rel-dir}"
                source="1.7"
                compiler="javac1.7"
                includeantruntime="false"
-               debug="${git.is_development}"
+               optimize="true"
+               debug="${javac_debug}"
                debuglevel="lines,vars,source"
                failonerror="true"
                classpathref="classpath">
@@ -119,7 +124,14 @@
 
     </target>
 
-    <target name="setVersion.getBranch" >
+    <target name="setVersion.getBranch_travis" if="env.TRAVIS_BRANCH">
+        <!-- special case, we are running on travis, we take
+             branch name from env vars because travis does
+             not clone branch (detached head) -->
+        <property name="git.branch.current" value="${env.TRAVIS_BRANCH}" />
+    </target>
+
+    <target name="setVersion.getBranch_git" unless="env.TRAVIS_BRANCH">
         <!-- Get current branch -->
         <exec executable="git"
               failonerror="true"
@@ -129,7 +141,9 @@
             <arg value="--abbrev-ref" />
             <arg value="HEAD" />
         </exec>
+    </target>
 
+    <target name="setVersion.getBranch" depends="setVersion.getBranch_travis, setVersion.getBranch_git">
         <!-- Find out version depending of branch
              Dev: X.YZ_abcde
              Release: X.YZ -->
@@ -139,7 +153,10 @@
                         arg2="${git.branch.current}"/>
             </not>
         </condition>
-        <property name="git.is_development" value="off" />
+        <property name="git.is_development" value="false" />
+
+
+        <echoproperties regex="git"/>
 
         <echo message="Current branch: ${git.branch.current}" />
 
@@ -185,17 +202,15 @@
                  value="%BUILDID%${git.commit.current}" />
     </target>
 
-    <target name="setVersion.getComplement" if="git.is_development"
-            depends="setVersion.getBranch">
 
-        <property name="version.complement"
-                  value=".${build.number}_${git.commit.current}" />
-        <property name="version.type" value="Development" />
-    </target>
+    <target name="setVersion" depends="setVersion.getBranch">
+        <condition property="version.complement" value=".${build.number}_${git.commit.current}" else="">
+            <equals arg1="${git.is_development}" arg2="true" />
+        </condition>
+        <condition property="version.type" value="development" else="release">
+            <equals arg1="${git.is_development}" arg2="true" />
+        </condition>
 
-    <target name="setVersion" depends="setVersion.getComplement">
-        <property name="version.complement" value="" />
-        <property name="version.type" value="Release" />
 
         <!-- Get version name (git last tag) -->
         <exec executable="git"

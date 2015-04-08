@@ -1,0 +1,24 @@
+language: java
+jdk:
+ - oraclejdk7
+
+script:
+ - ant generate
+
+
+deploy:
+  provider: releases
+  api_key:
+    secure: PYY5rfxqyt3zlPqwUzfYrAjFqL2BSQz3wQ+evbbx3OcCjwdTm196WeLv3k5S0m1hd7pwG3ERaD/OCawHBw/8W4snF4BwaakpsoB324enXQuJ81+8YpaZjJpcKwGsVWa0RefGrwE/QHje3NLv7ttXa7QWXt2A4Qi2o/sSomxxcGQ=
+  file:
+   - dist/release/*.jar
+  file_glob: true
+  skip_cleanup: true
+  on:
+    repo: neverfail/NeverFail
+    branch: master
+
+
+notifications:
+  email: 
+   - secure: SDj/SjClVfAMKI0H1w2ChkboYq0unqbfE2P+GEO6EsSg9+9+ePfzuzSu+GYlQw4CRkSs2yUWKxvdNH+eCAv7WVGTFlToesDpHscS4m3zbYb91OWD/T+ge5cy7W69fa3XovvpKw8+r2vvzLse6g1lYrmtDzRnT6QizpnA0m8vb3A=

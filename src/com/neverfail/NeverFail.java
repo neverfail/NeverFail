@@ -15,13 +15,15 @@ class NeverFail {
     private static final byte COMPRESSION_LZMA = 'Z';
     private byte compression = COMPRESSION_NONE;
 
+    private MagicConstants magic = new MagicConstants();
+
     /**
      * Main constructor, start neverFail process
      *
      * @param quiz A valid quiz file
      * @throws Exception
      */
-    private NeverFail(File quiz) throws Exception {
+    public NeverFail(File quiz) throws Exception {
 
         // validate quiz file
         File swf = checkQuiz(quiz);
@@ -80,7 +82,7 @@ class NeverFail {
      * @return picked file or folder
      * @throws Exception when no choices are made
      */
-    private static String quizPrompt() throws Exception {
+    public static String quizPrompt() throws Exception {
         // display prompt
         int retry = 3; // after 3 failed prompt, we give up
         String path = null;
@@ -116,7 +118,7 @@ class NeverFail {
      * @param quiz A path or file designating a quiz
      * @return Main swf file
      */
-    private static File checkQuiz(File quiz) throws InvalidQuizFile {
+    public static File checkQuiz(File quiz) throws InvalidQuizFile {
         try {
             // file must exist (yeah no shit sherlock...)
             if (!quiz.exists()) throw new FileNotFoundException("Quiz file given does not exist");
@@ -187,7 +189,7 @@ class NeverFail {
      *
      * @return Full swf uncompressed bytes
      */
-    private byte[] decompressSwf(File swf) throws Exception {
+    public byte[] decompressSwf(File swf) throws Exception {
         Logger.log("Decompressing Swf file");
         try {
             // create stream for swf file
@@ -238,9 +240,9 @@ class NeverFail {
      * @param rawBytes Swf to search in
      * @throws Exception
      */
-    private void searchFunctionsPositions(byte[] rawBytes) throws Exception {
+    public void searchFunctionsPositions(byte[] rawBytes) throws Exception {
         // search main entry point
-        final MagicConstants.Function entryFunction = MagicConstants.FUNCTIONS[0];
+        final MagicConstants.Function entryFunction = magic.FUNCTIONS[0];
         final int index = KPM.indexOf(rawBytes, entryFunction.startSignature);
         if (index < 0) {
             throw new Exception("Can't find initial entry point, unable to hack");
@@ -252,7 +254,7 @@ class NeverFail {
 
 
         // search entry points and end points offsets
-        for (MagicConstants.Function func : MagicConstants.FUNCTIONS) {
+        for (MagicConstants.Function func : magic.FUNCTIONS) {
             if (func != entryFunction) { // we already found entry offset
                 int subindex = KPM.indexOf(rawBytesSmaller, func.startSignature);
                 if (subindex < 0) {
@@ -275,8 +277,8 @@ class NeverFail {
      *
      * @param rawBytes Swf to search in
      */
-    private void searchAddressesDirty(byte[] rawBytes) throws Exception {
-        for (MagicConstants.Variable variable : MagicConstants.VARIABLES) {
+    public void searchAddressesDirty(byte[] rawBytes) throws Exception {
+        for (MagicConstants.Variable variable : magic.VARIABLES) {
             variable.searchAddress(rawBytes);
         }
     }
@@ -284,10 +286,10 @@ class NeverFail {
     /**
      * Replace mapped variables addresses into bytecode
      */
-    private void updateVariablesAddresses() {
+    public void updateVariablesAddresses() {
         // pretty much strait forward
-        for (MagicConstants.Variable variable : MagicConstants.VARIABLES) {
-            for (MagicConstants.Function func : MagicConstants.FUNCTIONS) {
+        for (MagicConstants.Variable variable : magic.VARIABLES) {
+            for (MagicConstants.Function func : magic.FUNCTIONS) {
                 func.bytecode = func.bytecode.replace("%" + variable.name + "%", printHexBinary(variable.address));
             }
         }
@@ -301,7 +303,7 @@ class NeverFail {
      * @param range2 additional value
      * @throws Exception
      */
-    private void updateRandomRange(int range1, int range2) throws Exception {
+    public void updateRandomRange(int range1, int range2) throws Exception {
         if (range1 < 0 || range1 > range2 || range2 > 100) {
             throw new Exception("Range must be between 0-100 ");
         }
@@ -309,7 +311,7 @@ class NeverFail {
         String range1str = Integer.toHexString(range2 - range1);
         String range2str = Integer.toHexString(range1);
 
-        for (MagicConstants.Function func : MagicConstants.FUNCTIONS) {
+        for (MagicConstants.Function func : magic.FUNCTIONS) {
             // update bytecode, ensure hex number is 0 padded (0x01 not 0x1)
             func.bytecode = func.bytecode.replace("%range1%", (range1str.length() < 2) ? "0" + range1str : range1str);
             func.bytecode = func.bytecode.replace("%range2%", (range2str.length() < 2) ? "0" + range2str : range2str);
@@ -322,8 +324,8 @@ class NeverFail {
      * @param rawBytes swf byte array to update
      * @throws Exception
      */
-    private void insertHack(byte[] rawBytes) throws Exception {
-        for (MagicConstants.Function func : MagicConstants.FUNCTIONS) {
+    public void insertHack(byte[] rawBytes) throws Exception {
+        for (MagicConstants.Function func : magic.FUNCTIONS) {
             // check bytecode does not contain replacement pattern
             if (func.bytecode.contains("%")) {
                 throw new Exception(func.name + "() bytecode sequence contain unmodified pattern");
@@ -346,7 +348,7 @@ class NeverFail {
      * @param rawBytes bytes array to write
      * @throws Exception when shit happen
      */
-    private void writeSwf(File swf, byte[] rawBytes) throws Exception {
+    public void writeSwf(File swf, byte[] rawBytes) throws Exception {
         try {
             // in case original file was compressed, we do deflate
             // java deal with the writing like a boss
@@ -362,7 +364,7 @@ class NeverFail {
      * @param rawBytes swf bytes uncompressed
      * @return swf bytes compressed (or not)
      */
-    private byte[] compressSwf(byte[] rawBytes) {
+    public byte[] compressSwf(byte[] rawBytes) {
         // todo: compression don't work, need a debug,
         // todo: since then, compression is set to none
         compression = COMPRESSION_NONE;

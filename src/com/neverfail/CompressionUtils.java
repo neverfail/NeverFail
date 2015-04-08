@@ -8,10 +8,7 @@ import java.util.zip.Inflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-class CompressionUtils
-{
-
-
+abstract class CompressionUtils {
     /***
      * Extract zipfile to outdir with complete directory structure
      * disclaimer, I didn't wrote that ...
@@ -20,8 +17,7 @@ class CompressionUtils
      */
     public static void extract(File zipfile, File outdir) {
         // todo: replace with more trustful method
-        try
-        {
+        try {
             ZipInputStream zin = new ZipInputStream(new FileInputStream(zipfile));
             ZipEntry entry;
             String name, dir;
@@ -35,13 +31,10 @@ class CompressionUtils
                 if( dir != null ) {
                     mkdirs(outdir, dir);
                 }
-
                 extractFile(zin, outdir, name);
             }
             zin.close();
-        }
-        catch (IOException err)
-        {
+        } catch (IOException err) {
             throw new RuntimeException("Unable to extract quiz", err);
         }
     }

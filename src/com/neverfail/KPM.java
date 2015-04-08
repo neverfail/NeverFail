@@ -4,7 +4,7 @@ package com.neverfail;
  * Knuth-Morris-Pratt Algorithm for Pattern Matching
  * Shamelessly taken from http://stackoverflow.com/a/1507813
  */
-class KPM {
+final class KPM {
     /**
      * Finds the first occurrence of the pattern in the text.
      */

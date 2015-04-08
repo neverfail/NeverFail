@@ -1,4 +1,4 @@
-NeverFail
+NeverFail [![Build Status](https://travis-ci.org/neverfail/NeverFail.svg?branch=master)](https://travis-ci.org/neverfail/NeverFail)
 ==========
 
 NeverFail is a java jar executable to patch Articulate's QuizMaker's output.
