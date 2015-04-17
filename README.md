@@ -14,12 +14,7 @@ it's all on quiz.swf and invisible (file size don't change).
     1. Java JDK 1.7+
     2. Ant build executable
     3. Brain
-
-## Usage
-
-1. Simply run Ant build or release process.
-    * Build project: `ant build`
-    * Generate .jar (also build): `ant generate`
+3. Compile and create .jar : `ant generate`
      
 ## Contributing
 
