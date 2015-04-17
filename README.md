@@ -1,4 +1,4 @@
-NeverFail [![Release][release_img]](release_url) [![Build Status][build_status_img]](build_status_url) [![Issues][issues_img]](issues_url)
+NeverFail [![Release][release_img]][release_url] [![Build Status][build_status_img]][build_status_url] [![Issues][issues_img]][issues_url]
 ==========
 
 NeverFail is a java jar executable to patch Articulate's QuizMaker's output.
@@ -53,9 +53,9 @@ only them could have done that. They deserve the biggest thank you.
 Read Licences.txt
 
 
+[release_img]: https://img.shields.io/github/release/neverfail/NeverFail.svg
+[release_url]: https://github.com/neverfail/NeverFail/releases/latest
 [build_status_img]: https://travis-ci.org/neverfail/NeverFail.svg?branch=master
 [build_status_url]: https://travis-ci.org/neverfail/NeverFail
 [issues_img]: https://img.shields.io/github/issues/neverfail/NeverFail.svg
 [issues_url]: https://github.com/neverfail/NeverFail/issues
-[release_img]: https://img.shields.io/github/release/neverfail/NeverFail.svg
-[release_url]: https://github.com/neverfail/NeverFail/releases/latest
