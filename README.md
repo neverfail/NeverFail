@@ -1,13 +1,12 @@
 NeverFail [![Release][release_img]][release_url] [![Build Status][build_status_img]][build_status_url] [![Issues][issues_img]][issues_url]
 ==========
 
-NeverFail is a java jar executable to patch Articulate's QuizMaker's output.
-It rewrite quiz.swf scoring function to update mark in case the quiz have been failed.
-The new mark is picked at random every runtime and can be adjust in this code.
-Main advantage of this method is that it doesn't produce .xml files and other data,
-it's all on quiz.swf and invisible (file size don't change).
+NeverFail is a java jar executable to patch Articulate's QuizMaker's quizzes.  
+It rewrite quiz.swf's scoring function to update mark in case quiz have been failed (it doesn't change it if user succeed).  
+The new mark is picked randomly every runtime and can be adjusted in [this code][random_line].  
+Main advantage of this method is that it doesn't produce .xml files and other data, it's all on quiz.swf and invisible (file size don't change).
 
-## Installation
+## Building
 
 1. Clone it: `git clone https://github.com/neverfail/NeverFail`
 2. Ensure you have:
@@ -15,6 +14,11 @@ it's all on quiz.swf and invisible (file size don't change).
     2. Ant build executable
     3. Brain
 3. Compile and create .jar : `ant generate`
+
+## Download
+
+You can download latest release here:  
+https://github.com/neverfail/NeverFail/releases
      
 ## Contributing
 
@@ -38,13 +42,12 @@ it's all on quiz.swf and invisible (file size don't change).
 
 ## Credits
 
-Special thanks to the original decompiler maniac that allow us to work on
-all these quiz projects.
-Thanks to the QuizCheater's developers who gave a deep insight of the inner working.
-All beta testers that provide helpful information.
+Special thanks to the original decompiler maniac who allow us to work on all these quiz projects.  
+Thanks to the QuizCheater's developers who gave us deep insight of the inner working.  
+All beta testers that provided helpful informations.  
 
-Finally, NeverFail developers that worked days and nights to release in time.
-This is the result of hard time of researching and bytecode manipulation,
+Finally, NeverFail developers that worked days and nights to release in time.  
+This is the result of hard time of researching and bytecode manipulation,  
 only them could have done that. They deserve the biggest thank you.
 
 
@@ -59,3 +62,4 @@ Read Licences.txt
 [build_status_url]: https://travis-ci.org/neverfail/NeverFail
 [issues_img]: https://img.shields.io/github/issues/neverfail/NeverFail.svg
 [issues_url]: https://github.com/neverfail/NeverFail/issues
+[random_line]: src/com/neverfail/NeverFail.java#L40
