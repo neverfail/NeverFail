@@ -1,67 +1,71 @@
-;; NeverFail patch two functions
-;; This file intend to explain what the patch does and how
+### Bytecode manipulation detail
 
-;; First we need to patch two function because we haven't enough
-;; space to write on just one.
+NeverFail patch two functions  
+This file intend to explain what the patch does and how.
 
-;; Basically we rewrite Score() function that return the score
-;; integer as the following equivalent code:
+We need to patch two function because we haven't enough space (bytes) to write on just one.
 
-;; // condition to apply cheat, quiz is failed
-;; if(this.m_nScore < this.PassScore) {
-;;     // compute a random mark
-;;     var goal = ((Math.random() * 40) + 55) * this.MaxScore / 100;
-;;
-;;     // add questions maximum points until we reach random mark
-;;     var i = this.m_nScore = 0;
-;;     do {
-;;         // add question maximum points
-;;         this.m_nScore += this.m_arrInteractions[i++].MaxScore;
-;;         // stop when goal is reached
-;;         if(this.m_nScore > goal) break;
-;;     } while(i < this.m_arrInteractions.length);
-;; }
-;;
-;; // normal behavior of function
-;; return this.m_nScore;
+Basically we rewrite `Score()` function that return the score integer as the new following equivalent pseudo-code:
+```
+// condition to apply cheat, quiz is failed
+if(this.m_nScore < this.PassScore) {
+   // compute a random mark
+   var goal = ((Math.random() * 40) + 55) * this.MaxScore / 100;
 
-;; As this does not fill in Score() body,
-;; we use m_nScore as a switch for cheating
-;; when m_nScore is negative, we deduce it's a
-;; call from Score() to continue cheat with Passed()
+   // add questions maximum points until we reach random mark
+   var i = this.m_nScore = 0;
+   do {
+       // add question maximum points
+       this.m_nScore += this.m_arrInteractions[i++].MaxScore;
+       // stop when goal is reached
+       if(this.m_nScore > goal) break;
+   } while(i < this.m_arrInteractions.length);
+}
 
-;; (function Score())
-;; // condition to apply cheat, quiz is failed
-;; if(this.m_nScore < this.PassScore) {
-;;     // compute a random mark (this time it's negated)
-;;     var this.m_nScore = - (((Math.random() * 40) + 55) * this.MaxScore / 100);
-;;
-;;     // delegate work to Passed()
-;;     Passed();
-;; }
-;;
-;; (function Passed())
-;; // switch with m_nScore, negative is a call from Score()
-;; if(this.m_nScore < 0) {
-;;     // set our goal by negating m_nScore
-;;     var goal = -this.m_nScore;
-;;
-;;     // next is the same process
-;;     // add questions maximum points until we reach random mark
-;;     var i = this.m_nScore = 0;
-;;     do {
-;;         // add question maximum points
-;;         this.m_nScore += this.m_arrInteractions[i++].MaxScore;
-;;         // stop when goal is reached
-;;         if(this.m_nScore > goal) break;
-;;     } while(i < this.m_arrInteractions.length);
-;; }
-;;
-;; // we alwais passed quiz
-;; return true;
+// normal behavior of function
+return this.m_nScore;
+```
+But all this code does not fill in `Score()` body, so wa use the variable `m_nScore` as a switch for cheating  
+when `m_nScore` is negative, we deduce it's a call from `Score()` to continue cheat with `Passed()`
 
-;; The previous codes are translated as:
+ * Function `Score()`
+```
+// condition to apply cheat, quiz is failed
+if(this.m_nScore < this.PassScore) {
+   // compute a random mark (this time it's negated)
+   var this.m_nScore = - (((Math.random() * 40) + 55) * this.MaxScore / 100);
 
+   // delegate work to Passed()
+   Passed();
+}
+```
+
+ * Function `Passed()`
+ ```
+// switch with m_nScore, negative is a call from Score()
+if(this.m_nScore < 0) {
+   // set our goal by negating m_nScore
+   var goal = -this.m_nScore;
+
+   // next is the same process
+   // add questions maximum points until we reach random mark
+   var i = this.m_nScore = 0;
+   do {
+       // add question maximum points
+       this.m_nScore += this.m_arrInteractions[i++].MaxScore;
+       // stop when goal is reached
+       if(this.m_nScore > goal) break;
+   } while(i < this.m_arrInteractions.length);
+}
+
+// we alwais passed quiz
+return true;
+```
+
+The previous codes have been translated into these bytecode instructions:
+ 
+ * Function `Score()`
+```
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; public function get Passed() : Boolean ;;;
 _as3_getlocal <0>  							//d0
@@ -127,7 +131,10 @@ _as3_iflt offset: -43 - 8					//15 d1 ff ff
 _as3_pushtrue  								//26
 _as3_returnvalue 							//48
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+```
 
+ * Function `Passed()`
+```
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; public function get Score() : Number   ;;;
 _as3_getlocal <0>  							//d0
@@ -166,3 +173,4 @@ _as3_getlocal <0>  							//d0
 _as3_getproperty m_nScore 					//66 %m_nScore%
 _as3_returnvalue  							//48
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+```
