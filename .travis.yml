@@ -17,6 +17,7 @@ deploy:
   on:
     repo: neverfail/NeverFail
     branch: master
+    tags: true
 
 
 notifications:
