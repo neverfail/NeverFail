@@ -1,4 +1,4 @@
-package com.neverfail;
+tyotypackage com.neverfail;
 
 import javax.swing.*;
 import java.io.*;
